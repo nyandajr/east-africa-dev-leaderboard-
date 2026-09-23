@@ -1,4 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>East Africa Dev Ledger</title>
+<script>
+  // Applied before paint to avoid a flash of the wrong theme.
+  try {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light' || saved === 'dark') {
+      document.documentElement.setAttribute('data-theme', saved);
+    }
+  } catch (e) {}
+</script>
 <style>
   :root {
     color-scheme: light;
@@ -54,6 +68,7 @@
   }
 
   * { box-sizing: border-box; }
+  html { background: var(--bg); }
   body {
     margin: 0;
     padding-inline: 20px;
@@ -62,9 +77,16 @@
     color: var(--text);
     font-family: var(--sans);
     font-variant-numeric: tabular-nums;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
-  main { max-width: 780px; margin: 0 auto; }
+  main { max-width: 980px; margin: 0 auto; }
 
+  .top-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
   .eyebrow {
     font-family: var(--mono);
     font-size: 0.72rem;
@@ -74,7 +96,7 @@
     margin-bottom: 10px;
   }
   h1 {
-    font-size: clamp(1.7rem, 4.5vw, 2.3rem);
+    font-size: clamp(1.7rem, 4.5vw, 2.4rem);
     font-weight: 700;
     letter-spacing: -0.015em;
     text-wrap: balance;
@@ -84,9 +106,42 @@
     color: var(--text-muted);
     font-size: 0.98rem;
     line-height: 1.55;
-    max-width: 60ch;
+    max-width: 64ch;
     margin: 0 0 28px;
   }
+
+  /* --- Theme toggle --- */
+  .theme-toggle {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+  }
+  .theme-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 999px;
+    background: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .theme-btn svg { width: 16px; height: 16px; }
+  .theme-btn[aria-pressed="true"] {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .theme-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   /* --- KPI strip --- */
   .kpis {
@@ -103,6 +158,7 @@
   .kpi {
     background: var(--surface);
     padding: 16px 16px 14px;
+    transition: background-color 0.25s ease;
   }
   .kpi-label {
     font-family: var(--mono);
@@ -114,7 +170,7 @@
   }
   .kpi-value {
     font-family: var(--mono);
-    font-size: clamp(1.05rem, 3vw, 1.4rem);
+    font-size: clamp(1.05rem, 2.6vw, 1.5rem);
     font-weight: 700;
     line-height: 1.15;
     white-space: nowrap;
@@ -139,6 +195,7 @@
 
   /* --- Tabs --- */
   .tabs {
+    position: relative;
     display: inline-flex;
     gap: 2px;
     padding: 3px;
@@ -147,7 +204,20 @@
     border-radius: 10px;
     margin-bottom: 18px;
   }
+  .tab-indicator {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    left: 3px;
+    width: 0;
+    background: var(--accent);
+    border-radius: 7px;
+    transition: transform 0.28s cubic-bezier(0.65,0,0.35,1), width 0.28s cubic-bezier(0.65,0,0.35,1);
+    z-index: 0;
+  }
   .tab {
+    position: relative;
+    z-index: 1;
     font-family: var(--mono);
     font-size: 0.85rem;
     font-weight: 600;
@@ -158,12 +228,9 @@
     cursor: pointer;
     padding: 8px 16px;
     -webkit-tap-highlight-color: transparent;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition: color 0.2s ease;
   }
-  .tab[aria-selected="true"] {
-    color: var(--bg);
-    background: var(--accent);
-  }
+  .tab[aria-selected="true"] { color: var(--bg); }
   .tab .tab-count {
     opacity: 0.7;
     font-weight: 400;
@@ -181,6 +248,8 @@
     overflow: hidden;
     box-shadow: var(--shadow);
   }
+  .list.fade-in { animation: listIn 0.32s ease both; }
+
   .row {
     position: relative;
     display: grid;
@@ -189,13 +258,20 @@
     gap: 12px;
     padding: 12px 18px;
     border-bottom: 1px solid var(--border);
+    animation: rowIn 0.4s ease backwards;
+    animation-delay: calc(var(--i, 0) * 28ms);
+    transition: background-color 0.15s ease;
   }
+  .row:hover { background: var(--accent-soft); }
   .row:last-child { border-bottom: none; }
   .row-bar {
     position: absolute;
     left: 0; top: 0; bottom: 0;
+    width: 0;
     background: var(--accent-soft);
     z-index: 0;
+    transition: width 0.6s cubic-bezier(0.16,1,0.3,1);
+    transition-delay: calc(var(--i, 0) * 28ms);
   }
   .row > * { position: relative; z-index: 1; }
 
@@ -252,6 +328,7 @@
     border-left: 3px solid var(--accent);
     border-radius: 8px;
     padding: 18px 20px;
+    transition: background-color 0.25s ease;
   }
   .callout h2 {
     font-size: 0.95rem;
@@ -280,10 +357,26 @@
     font-size: 0.85em;
   }
 
+  @keyframes rowIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes listIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .row, .list.fade-in { animation: none !important; }
+    .row-bar { transition: none !important; }
+    * { scroll-behavior: auto !important; }
+  }
+
   @media (max-width: 560px) {
     .kpis { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 460px) {
+    .top-row { flex-direction: column; }
     .row { grid-template-columns: 1.8rem 1.8rem 1fr auto; padding: 10px 14px; gap: 8px; }
     .avatar { width: 24px; height: 24px; }
     .count { font-size: 0.9rem; }
@@ -291,10 +384,27 @@
     .tab { flex: 1; padding: 8px 6px; font-size: 0.78rem; text-align: center; }
   }
 </style>
-
+</head>
+<body>
 <main>
-  <div class="eyebrow">East Africa Dev Ledger</div>
-  <h1>Who's actually building the most</h1>
+  <div class="top-row">
+    <div>
+      <div class="eyebrow">East Africa Dev Ledger</div>
+      <h1>Who's actually building the most</h1>
+    </div>
+    <div class="theme-toggle" role="group" aria-label="Theme">
+      <button class="theme-btn" id="theme-light" type="button" aria-pressed="false" title="Light">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="theme-btn" id="theme-system" type="button" aria-pressed="false" title="System">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </button>
+      <button class="theme-btn" id="theme-dark" type="button" aria-pressed="false" title="Dark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+      </button>
+    </div>
+  </div>
+
   <p class="subhead">
     Top 20 developers per country by GitHub followers, pulled fresh from
     GitHub's own GraphQL API every 5 days instead of a scraper that's gone
@@ -326,7 +436,9 @@
 
   <div class="meta" id="meta">loading…</div>
 
-  <div class="tabs" id="tabs" role="tablist"></div>
+  <div class="tabs" id="tabs" role="tablist">
+    <div class="tab-indicator" id="tab-indicator"></div>
+  </div>
 
   <div id="lists"></div>
 
@@ -351,6 +463,45 @@
 
 <script>
 const COUNTRY_ORDER = ['Tanzania', 'Kenya', 'Uganda'];
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// --- Theme toggle ---
+function setTheme(mode) {
+  if (mode === 'system') {
+    document.documentElement.removeAttribute('data-theme');
+  } else {
+    document.documentElement.setAttribute('data-theme', mode);
+  }
+  try {
+    if (mode === 'system') localStorage.removeItem('theme');
+    else localStorage.setItem('theme', mode);
+  } catch (e) {}
+  document.querySelectorAll('.theme-btn').forEach(b => b.setAttribute('aria-pressed', 'false'));
+  document.getElementById(`theme-${mode}`).setAttribute('aria-pressed', 'true');
+}
+(function initTheme() {
+  let saved = 'system';
+  try { saved = localStorage.getItem('theme') || 'system'; } catch (e) {}
+  document.querySelectorAll('.theme-btn').forEach(b => b.setAttribute('aria-pressed', 'false'));
+  document.getElementById(`theme-${saved}`).setAttribute('aria-pressed', 'true');
+})();
+document.getElementById('theme-light').addEventListener('click', () => setTheme('light'));
+document.getElementById('theme-system').addEventListener('click', () => setTheme('system'));
+document.getElementById('theme-dark').addEventListener('click', () => setTheme('dark'));
+
+// --- Count-up ---
+function countUp(el, target) {
+  if (reduceMotion) { el.textContent = target.toLocaleString(); return; }
+  const start = performance.now();
+  const duration = 700;
+  function frame(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(target * eased).toLocaleString();
+    if (t < 1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
 
 function initials(login) {
   return login.replace(/[^A-Za-z0-9]/g, '').slice(0, 2).toUpperCase() || '?';
@@ -366,12 +517,12 @@ function renderList(country, entries) {
   entries.forEach((entry, i) => {
     const row = document.createElement('div');
     row.className = 'row';
+    row.style.setProperty('--i', i);
     const rank = i + 1;
     if (rank <= 3) row.dataset.tier = String(rank);
     const pct = max > 0 ? Math.max((entry.contributions / max) * 100, entry.contributions > 0 ? 3 : 0) : 0;
-    const id = initials(entry.login);
     row.innerHTML = `
-      <div class="row-bar" style="width:${pct}%"></div>
+      <div class="row-bar"></div>
       <div class="rank">${String(rank).padStart(2, '0')}</div>
       <img class="avatar" src="https://github.com/${entry.login}.png?size=60" alt=""
            loading="lazy"
@@ -380,17 +531,37 @@ function renderList(country, entries) {
       <div class="count">${entry.contributions.toLocaleString()}<span class="count-label">contributions</span></div>
     `;
     list.appendChild(row);
+    requestAnimationFrame(() => {
+      row.querySelector('.row-bar').style.width = pct + '%';
+    });
   });
   return list;
 }
 
+function moveIndicator(tab) {
+  const indicator = document.getElementById('tab-indicator');
+  const tabs = document.getElementById('tabs');
+  const tabRect = tab.getBoundingClientRect();
+  const tabsRect = tabs.getBoundingClientRect();
+  indicator.style.width = tabRect.width + 'px';
+  indicator.style.transform = `translateX(${tabRect.left - tabsRect.left - 3}px)`;
+}
+
 function activate(country) {
   document.querySelectorAll('.tab').forEach(t => {
-    t.setAttribute('aria-selected', String(t.dataset.country === country));
+    const selected = t.dataset.country === country;
+    t.setAttribute('aria-selected', String(selected));
+    if (selected) moveIndicator(t);
   });
   document.querySelectorAll('.list').forEach(l => {
-    if (l.id === `list-${country}`) l.setAttribute('data-active', '');
-    else l.removeAttribute('data-active');
+    l.classList.remove('fade-in');
+    if (l.id === `list-${country}`) {
+      l.setAttribute('data-active', '');
+      void l.offsetWidth;
+      l.classList.add('fade-in');
+    } else {
+      l.removeAttribute('data-active');
+    }
   });
 }
 
@@ -416,9 +587,9 @@ fetch('data.json')
         }
       });
     });
-    document.getElementById('kpi-total').textContent = totalTracked;
+    countUp(document.getElementById('kpi-total'), totalTracked);
     document.getElementById('kpi-total-sub').textContent = `${countries.length} countries`;
-    document.getElementById('kpi-combined').textContent = combined.toLocaleString();
+    countUp(document.getElementById('kpi-combined'), combined);
     document.getElementById('kpi-leader').textContent = leader ? leader.login : '—';
     document.getElementById('kpi-leader-sub').textContent = leader
       ? `${leaderCountry} · ${leader.contributions.toLocaleString()}`
@@ -429,7 +600,8 @@ fetch('data.json')
     // --- Tabs + lists ---
     const tabs = document.getElementById('tabs');
     const lists = document.getElementById('lists');
-    tabs.innerHTML = '';
+    const indicator = document.getElementById('tab-indicator');
+    tabs.querySelectorAll('.tab').forEach(t => t.remove());
     lists.innerHTML = '';
 
     countries.forEach(country => {
@@ -446,10 +618,17 @@ fetch('data.json')
 
       lists.appendChild(renderList(country, entries));
     });
+    tabs.appendChild(indicator);
 
     activate(countries[0]);
+    window.addEventListener('resize', () => {
+      const current = document.querySelector('.tab[aria-selected="true"]');
+      if (current) moveIndicator(current);
+    });
   })
   .catch(() => {
     document.getElementById('meta').textContent = 'data.json not found yet';
   });
 </script>
+</body>
+</html>

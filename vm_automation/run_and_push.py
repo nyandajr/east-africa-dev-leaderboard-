@@ -34,15 +34,24 @@ def sync_with_remote():
     run("git", "reset", "--hard", "origin/main")
 
 
-def build_commit_message(results):
-    top = results[0]
+def build_commit_message(countries):
+    total = sum(len(entries) for entries in countries.values())
+    leader = None
+    leader_country = None
+    for country, entries in countries.items():
+        if entries and (leader is None or entries[0]["contributions"] > leader["contributions"]):
+            leader = entries[0]
+            leader_country = country
+    if leader is None:
+        return f"data: leaderboard refresh — {total} tracked"
     return (
-        f"data: leaderboard refresh — {top['login']} leads "
-        f"({top['contributions']:,} contributions) — {len(results)} tracked"
+        f"data: leaderboard refresh — {leader['login']} ({leader_country}) leads "
+        f"({leader['contributions']:,} contributions) — {total} tracked across "
+        f"{len(countries)} countries"
     )
 
 
-def git_commit_and_push(results):
+def git_commit_and_push(countries, token):
     # freddynyanda@proton.me is Fred's real, verified GitHub email -- same
     # standardization as every other tracker in this portfolio.
     run("git", "config", "user.name", "nyandajr")
@@ -54,8 +63,11 @@ def git_commit_and_push(results):
         print("[run_and_push] no changes to commit")
         return
 
-    run("git", "commit", "-m", build_commit_message(results))
-    run("git", "push", "--force", "origin", "HEAD:main")
+    run("git", "commit", "-m", build_commit_message(countries))
+    # Authenticated URL built at push time from the .env token, rather than
+    # storing credentials in git config on disk.
+    push_url = f"https://{token}@github.com/nyandajr/east-africa-dev-leaderboard-.git"
+    run("git", "push", "--force", push_url, "HEAD:main")
 
 
 def main():
@@ -65,9 +77,9 @@ def main():
     token = os.environ.get("GITHUB_TOKEN")
     if not token:
         raise SystemExit("GITHUB_TOKEN not set in the VM's environment")
-    results = update_leaderboard.run(token=token)
+    countries = update_leaderboard.run(token=token)
 
-    git_commit_and_push(results)
+    git_commit_and_push(countries, token)
     print("[run_and_push] done")
 
 

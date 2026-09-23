@@ -5,7 +5,7 @@ every 5 days directly from GitHub's own GraphQL API — built after
 [committers.top](https://committers.top) was found stale for weeks at a
 time and, worse, ranking farmed commit history as real activity.
 
-**[Live dashboard](https://nyandajr.github.io/east-africa-dev-leaderboard/)**
+**[Live dashboard](https://nyandajr.github.io/east-africa-dev-leaderboard-/)**
 
 ## Why this exists
 
@@ -18,40 +18,39 @@ nobody the wiser.
 
 ## How it works
 
-**Phase A — discovery** (`src/discover.py`): cheap candidate shortlisting
-per country via GitHub's Search API, sorted by followers — the same signal
-committers.top itself leans on. Verified live counts as of 2026-09-23:
-Tanzania 6,402 · Kenya 36,592 · Uganda 8,793 · Rwanda 6,554 · Burundi 553
-GitHub users with a location set.
+**Discovery** (`src/discover.py`): candidate shortlisting per country via
+GitHub's Search API, sorted by followers — the same signal committers.top
+itself leans on. Verified live counts as of 2026-09-23: Tanzania 6,402 ·
+Kenya 36,592 · Uganda 8,793 · Rwanda 6,554 · Burundi 553 GitHub users with
+a location set. The tracked list per country is unfiltered — same "count
+everyone, no exclusions" methodology committers.top itself uses.
 
-**Phase B — classification** (`src/classify.py`): samples each candidate's
-own (non-fork) repos and labels their commit pattern as one of:
+**Refresh** (`src/update_leaderboard.py`): pulls each tracked user's real
+`contributionsCollection.contributionCalendar.totalContributions` straight
+from GitHub's GraphQL API for all three countries and writes
+`docs/data.json`, which the dashboard renders client-side as three
+tabbed sections (Tanzania / Kenya / Uganda, top 20 each). Runs on the VM's
+own crontab every 5 days — not GitHub Actions, same reasoning as every
+other tracker in this portfolio (schedule triggers deliver a fraction of
+their configured cadence for sub-hourly jobs; less of a concern at 5 days,
+but no reason to introduce a second automation pattern for one repo).
 
-- `FARMED` — generic/sequential commit messages ("commit 5000") landing
-  multiple-per-timestamp. Disqualifying, full stop.
-- `IMPORTED_HISTORY` — real commits, but pushed all at once from history
-  that predates the repo itself by a month or more (e.g. `Ajmalleonard`'s
-  `opin` repo: 17k+ genuine commits from a 13-month-old local history).
-- `AUTOMATED_PIPELINE` — very regular commit intervals with real,
-  content-aware messages — legitimate cron-driven pipelines, the same
-  pattern this portfolio's own trackers use. Counted at face value, same
-  as organic — only confirmed farming is excluded.
-- `ORGANIC` — normal human (or AI-assisted) development.
-
-Every category is grounded in a real case found during this portfolio's
-investigation of committers.top, not a theoretical taxonomy.
-
-**Phase C — refresh** (`src/update_leaderboard.py`): pulls each tracked
-user's real `contributionsCollection.contributionCalendar.totalContributions`
-straight from GitHub's GraphQL API and writes `docs/data.json`, which the
-dashboard renders client-side. Runs on the VM's own crontab every 5 days —
-not GitHub Actions, same reasoning as every other tracker in this
-portfolio (schedule triggers deliver a fraction of their configured
-cadence for sub-hourly jobs; less of a concern at 5 days, but no reason to
-introduce a second automation pattern for one repo).
+**Classification** (`src/classify.py`, investigative tool, not applied to
+the tracked list): samples a candidate's own (non-fork) repos and labels
+their commit pattern as one of `FARMED` (generic/sequential messages like
+"commit 5000" landing multiple-per-timestamp — how `ebrahimHakimuddin`'s
+~137k-commit repo was caught), `IMPORTED_HISTORY` (real commits pushed all
+at once from history that predates the repo itself), `AUTOMATED_PIPELINE`
+(regular intervals with real, content-aware messages — legitimate
+cron-driven pipelines), or `ORGANIC`. Every category is grounded in a real
+case found during this portfolio's investigation of committers.top, not a
+theoretical taxonomy — but it's used for transparency/flagging, not to
+exclude anyone from the count.
 
 ## Data
 
-- `docs/data.json` — current leaderboard snapshot, fetched by the dashboard.
+- `docs/data.json` — current leaderboard snapshot per country, fetched by
+  the dashboard.
 - `data/history.csv` — append-only history of every refresh, for tracking
-  movement over time.
+  movement over time. Rows before the 3-country expansion don't have a
+  `country` column (Tanzania-only at the time).

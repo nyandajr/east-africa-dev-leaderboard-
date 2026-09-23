@@ -1,4 +1,4 @@
-<title>Tanzania Dev Ledger</title>
+<title>East Africa Dev Ledger</title>
 <style>
   :root {
     color-scheme: light;
@@ -10,6 +10,11 @@
     --text-muted: #6B6656;
     --text-faint: #9A957F;
     --accent: #C67F1E;
+    --accent-soft: #C67F1E1A;
+    --gold: #B8860B;
+    --silver: #7C8088;
+    --bronze: #A05A2C;
+    --shadow: 0 1px 2px rgba(33,32,27,0.04), 0 8px 24px -12px rgba(33,32,27,0.12);
     --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
     --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
@@ -24,6 +29,11 @@
       --text-muted: #A6A18F;
       --text-faint: #6E6A5C;
       --accent: #E5A445;
+      --accent-soft: #E5A44526;
+      --gold: #E5B94E;
+      --silver: #9CA3AE;
+      --bronze: #C68355;
+      --shadow: 0 1px 2px rgba(0,0,0,0.2), 0 8px 24px -12px rgba(0,0,0,0.5);
     }
   }
   :root[data-theme="dark"] {
@@ -36,19 +46,24 @@
     --text-muted: #A6A18F;
     --text-faint: #6E6A5C;
     --accent: #E5A445;
+    --accent-soft: #E5A44526;
+    --gold: #E5B94E;
+    --silver: #9CA3AE;
+    --bronze: #C68355;
+    --shadow: 0 1px 2px rgba(0,0,0,0.2), 0 8px 24px -12px rgba(0,0,0,0.5);
   }
 
   * { box-sizing: border-box; }
   body {
     margin: 0;
     padding-inline: 20px;
-    padding-block: 40px;
+    padding-block: 44px;
     background: var(--bg);
     color: var(--text);
     font-family: var(--sans);
     font-variant-numeric: tabular-nums;
   }
-  main { max-width: 720px; margin: 0 auto; }
+  main { max-width: 780px; margin: 0 auto; }
 
   .eyebrow {
     font-family: var(--mono);
@@ -59,9 +74,9 @@
     margin-bottom: 10px;
   }
   h1 {
-    font-size: clamp(1.6rem, 4.5vw, 2.15rem);
+    font-size: clamp(1.7rem, 4.5vw, 2.3rem);
     font-weight: 700;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
     text-wrap: balance;
     margin: 0 0 8px;
   }
@@ -69,60 +84,162 @@
     color: var(--text-muted);
     font-size: 0.98rem;
     line-height: 1.55;
-    max-width: 62ch;
-    margin: 0 0 6px;
-  }
-  .meta {
-    font-family: var(--mono);
-    font-size: 0.78rem;
-    color: var(--text-faint);
-    margin-bottom: 32px;
+    max-width: 60ch;
+    margin: 0 0 28px;
   }
 
-  .list {
-    display: flex;
-    flex-direction: column;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  .row {
+  /* --- KPI strip --- */
+  .kpis {
     display: grid;
-    grid-template-columns: 2.4rem 1fr auto;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 18px;
-    border-bottom: 1px solid var(--border);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow);
   }
-  .row:last-child { border-bottom: none; }
-
-  .rank {
+  .kpi {
+    background: var(--surface);
+    padding: 16px 16px 14px;
+  }
+  .kpi-label {
     font-family: var(--mono);
-    font-size: 1.05rem;
-    font-weight: 600;
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     color: var(--text-faint);
+    margin-bottom: 8px;
   }
-  .row:nth-child(1) .rank, .row:nth-child(2) .rank { color: var(--accent); }
-
-  .name {
-    font-weight: 600;
-    font-size: 0.98rem;
+  .kpi-value {
+    font-family: var(--mono);
+    font-size: clamp(1.05rem, 3vw, 1.4rem);
+    font-weight: 700;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .kpi-sub {
+    font-size: 0.74rem;
+    color: var(--text-faint);
+    margin-top: 3px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
+  .meta {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--text-faint);
+    margin-bottom: 20px;
+  }
+
+  /* --- Tabs --- */
+  .tabs {
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 18px;
+  }
+  .tab {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    padding: 8px 16px;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+  .tab[aria-selected="true"] {
+    color: var(--bg);
+    background: var(--accent);
+  }
+  .tab .tab-count {
+    opacity: 0.7;
+    font-weight: 400;
+    margin-left: 5px;
+  }
+  .tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .list { display: none; }
+  .list[data-active] {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.6rem 2.2rem 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .row:last-child { border-bottom: none; }
+  .row-bar {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: var(--accent-soft);
+    z-index: 0;
+  }
+  .row > * { position: relative; z-index: 1; }
+
+  .rank {
+    font-family: var(--mono);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-faint);
+  }
+  .row[data-tier="1"] .rank { color: var(--gold); }
+  .row[data-tier="2"] .rank { color: var(--silver); }
+  .row[data-tier="3"] .rank { color: var(--bronze); }
+
+  .avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    object-fit: cover;
+    display: block;
+  }
+
+  .name {
+    font-weight: 600;
+    font-size: 0.96rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .row[data-tier="1"] .name,
+  .row[data-tier="2"] .name,
+  .row[data-tier="3"] .name { font-weight: 700; }
+
   .count {
     font-family: var(--mono);
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 600;
     text-align: right;
     white-space: nowrap;
   }
   .count-label {
     display: block;
-    font-size: 0.65rem;
+    font-size: 0.64rem;
     font-weight: 400;
     color: var(--text-faint);
     text-align: right;
@@ -163,33 +280,66 @@
     font-size: 0.85em;
   }
 
+  @media (max-width: 560px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+  }
   @media (max-width: 460px) {
-    .row { grid-template-columns: 2rem 1fr auto; padding: 12px 14px; gap: 10px; }
-    .count { font-size: 0.92rem; }
+    .row { grid-template-columns: 1.8rem 1.8rem 1fr auto; padding: 10px 14px; gap: 8px; }
+    .avatar { width: 24px; height: 24px; }
+    .count { font-size: 0.9rem; }
+    .tabs { display: flex; }
+    .tab { flex: 1; padding: 8px 6px; font-size: 0.78rem; text-align: center; }
   }
 </style>
 
 <main>
-  <div class="eyebrow">East Africa Dev Ledger — Tanzania</div>
+  <div class="eyebrow">East Africa Dev Ledger</div>
   <h1>Who's actually building the most</h1>
   <p class="subhead">
-    Top 20 Tanzania developers by GitHub followers, pulled fresh from GitHub's
-    own GraphQL API every 5 days instead of a scraper that's gone stale for
-    weeks at a time.
+    Top 20 developers per country by GitHub followers, pulled fresh from
+    GitHub's own GraphQL API every 5 days instead of a scraper that's gone
+    stale for weeks at a time.
   </p>
+
+  <div class="kpis" id="kpis" hidden>
+    <div class="kpi">
+      <div class="kpi-label">Developers tracked</div>
+      <div class="kpi-value" id="kpi-total">—</div>
+      <div class="kpi-sub" id="kpi-total-sub">&nbsp;</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Combined contributions</div>
+      <div class="kpi-value" id="kpi-combined">—</div>
+      <div class="kpi-sub">across all 3 countries</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Regional leader</div>
+      <div class="kpi-value" id="kpi-leader">—</div>
+      <div class="kpi-sub" id="kpi-leader-sub">&nbsp;</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Refresh cadence</div>
+      <div class="kpi-value">5 days</div>
+      <div class="kpi-sub" id="kpi-updated">&nbsp;</div>
+    </div>
+  </div>
+
   <div class="meta" id="meta">loading…</div>
 
-  <div class="list" id="list"></div>
+  <div class="tabs" id="tabs" role="tablist"></div>
+
+  <div id="lists"></div>
 
   <div class="callout">
     <h2>Why this exists</h2>
     <p>
-      Committers.top ranked <strong>ebrahimHakimuddin</strong> #2 on a repo whose own
-      README claims it doesn't create real commits — it does: ~137,000 of them,
-      messages literally reading "commit 5000," "commit 4999," all landing in the
-      same second. Raw counts alone can't catch that. This page pulls real numbers
-      directly from GitHub instead of relying on a third-party scraper that can go
-      stale for weeks without anyone noticing.
+      Committers.top ranked <strong>ebrahimHakimuddin</strong> #2 on Tanzania's
+      board for a repo whose own README claims it doesn't create real commits —
+      it does: ~137,000 of them, messages literally reading "commit 5000,"
+      "commit 4999," all landing in the same second. Raw counts alone can't
+      catch that. This page pulls real numbers directly from GitHub instead of
+      relying on a third-party scraper that can go stale for weeks without
+      anyone noticing.
     </p>
   </div>
 
@@ -200,24 +350,104 @@
 </main>
 
 <script>
+const COUNTRY_ORDER = ['Tanzania', 'Kenya', 'Uganda'];
+
+function initials(login) {
+  return login.replace(/[^A-Za-z0-9]/g, '').slice(0, 2).toUpperCase() || '?';
+}
+
+function renderList(country, entries) {
+  const list = document.createElement('div');
+  list.className = 'list';
+  list.id = `list-${country}`;
+  list.setAttribute('role', 'tabpanel');
+  const max = entries.length ? entries[0].contributions : 0;
+
+  entries.forEach((entry, i) => {
+    const row = document.createElement('div');
+    row.className = 'row';
+    const rank = i + 1;
+    if (rank <= 3) row.dataset.tier = String(rank);
+    const pct = max > 0 ? Math.max((entry.contributions / max) * 100, entry.contributions > 0 ? 3 : 0) : 0;
+    const id = initials(entry.login);
+    row.innerHTML = `
+      <div class="row-bar" style="width:${pct}%"></div>
+      <div class="rank">${String(rank).padStart(2, '0')}</div>
+      <img class="avatar" src="https://github.com/${entry.login}.png?size=60" alt=""
+           loading="lazy"
+           onerror="this.style.display='none'">
+      <div class="name">${entry.login}</div>
+      <div class="count">${entry.contributions.toLocaleString()}<span class="count-label">contributions</span></div>
+    `;
+    list.appendChild(row);
+  });
+  return list;
+}
+
+function activate(country) {
+  document.querySelectorAll('.tab').forEach(t => {
+    t.setAttribute('aria-selected', String(t.dataset.country === country));
+  });
+  document.querySelectorAll('.list').forEach(l => {
+    if (l.id === `list-${country}`) l.setAttribute('data-active', '');
+    else l.removeAttribute('data-active');
+  });
+}
+
 fetch('data.json')
   .then(r => r.json())
   .then(d => {
+    const updated = new Date(d.generated_at);
     document.getElementById('meta').textContent =
-      `updated ${new Date(d.generated_at).toLocaleString()} · github graphql api`;
+      `updated ${updated.toLocaleString()} · github graphql api`;
 
-    const list = document.getElementById('list');
-    list.innerHTML = '';
-    d.leaderboard.forEach((entry, i) => {
-      const row = document.createElement('div');
-      row.className = 'row';
-      row.innerHTML = `
-        <div class="rank">${String(i + 1).padStart(2, '0')}</div>
-        <div class="name">${entry.login}</div>
-        <div class="count">${entry.contributions.toLocaleString()}<span class="count-label">contributions</span></div>
-      `;
-      list.appendChild(row);
+    const countries = COUNTRY_ORDER.filter(c => d.countries[c]);
+
+    // --- KPI strip ---
+    let totalTracked = 0, combined = 0, leader = null, leaderCountry = null;
+    countries.forEach(country => {
+      const entries = d.countries[country];
+      totalTracked += entries.length;
+      entries.forEach(e => {
+        combined += e.contributions;
+        if (!leader || e.contributions > leader.contributions) {
+          leader = e;
+          leaderCountry = country;
+        }
+      });
     });
+    document.getElementById('kpi-total').textContent = totalTracked;
+    document.getElementById('kpi-total-sub').textContent = `${countries.length} countries`;
+    document.getElementById('kpi-combined').textContent = combined.toLocaleString();
+    document.getElementById('kpi-leader').textContent = leader ? leader.login : '—';
+    document.getElementById('kpi-leader-sub').textContent = leader
+      ? `${leaderCountry} · ${leader.contributions.toLocaleString()}`
+      : '';
+    document.getElementById('kpi-updated').textContent = updated.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    document.getElementById('kpis').hidden = false;
+
+    // --- Tabs + lists ---
+    const tabs = document.getElementById('tabs');
+    const lists = document.getElementById('lists');
+    tabs.innerHTML = '';
+    lists.innerHTML = '';
+
+    countries.forEach(country => {
+      const entries = d.countries[country];
+
+      const tab = document.createElement('button');
+      tab.className = 'tab';
+      tab.type = 'button';
+      tab.setAttribute('role', 'tab');
+      tab.dataset.country = country;
+      tab.innerHTML = `${country}<span class="tab-count">${entries.length}</span>`;
+      tab.addEventListener('click', () => activate(country));
+      tabs.appendChild(tab);
+
+      lists.appendChild(renderList(country, entries));
+    });
+
+    activate(countries[0]);
   })
   .catch(() => {
     document.getElementById('meta').textContent = 'data.json not found yet';

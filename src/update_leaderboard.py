@@ -17,12 +17,17 @@ REPO_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_JSON = os.path.join(REPO_DIR, "docs", "data.json")
 HISTORY_CSV = os.path.join(REPO_DIR, "data", "history.csv")
 
-# The 10 names committers.top itself tracks for Tanzania, as of the
-# 2026-09-23 launch. Config, not hardcoded logic -- add/remove names here
-# as the community leaderboard shifts, no code changes needed.
+# Top 20 Tanzania candidates by GitHub follower count (GitHub Search API,
+# location:"Tanzania"), as of the 2026-09-23 launch. Raw list, unfiltered
+# by commit-authenticity classification -- same "count everyone, no
+# exclusions" methodology committers.top itself uses. Config, not hardcoded
+# logic -- add/remove names here as the community leaderboard shifts, no
+# code changes needed.
 TRACKED_USERS = [
     "Ajmalleonard", "ebrahimHakimuddin", "nyandajr", "raydanielg", "cleven12",
     "tacheraSasi", "isonlycoolie", "alobit21", "atilioobadia-cpu", "ALTUM-02",
+    "dexflare", "nyenza", "lykmapipo", "karimshaban01", "avict18",
+    "Kalebu", "isaka-james", "tarxemo", "gernest", "TheCollinsByte",
 ]
 
 GRAPHQL_URL = "https://api.github.com/graphql"

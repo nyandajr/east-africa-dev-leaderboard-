@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-09-22T23:58:52.065982+00:00",
+  "generated_at": "2026-09-23T17:34:58.253101+00:00",
   "leaderboard": [
     {
       "login": "Ajmalleonard",
-      "contributions": 106861
+      "contributions": 106871
     },
     {
       "login": "ebrahimHakimuddin",
-      "contributions": 55332
+      "contributions": 55369
     },
     {
       "login": "nyandajr",
-      "contributions": 40369
+      "contributions": 40371
     },
     {
       "login": "raydanielg",
@@ -22,16 +22,24 @@
       "contributions": 17402
     },
     {
+      "login": "tarxemo",
+      "contributions": 13102
+    },
+    {
       "login": "tacheraSasi",
-      "contributions": 11668
+      "contributions": 11693
     },
     {
       "login": "isonlycoolie",
-      "contributions": 11031
+      "contributions": 11070
     },
     {
       "login": "alobit21",
-      "contributions": 6912
+      "contributions": 6933
+    },
+    {
+      "login": "TheCollinsByte",
+      "contributions": 6886
     },
     {
       "login": "atilioobadia-cpu",
@@ -40,6 +48,38 @@
     {
       "login": "ALTUM-02",
       "contributions": 3082
+    },
+    {
+      "login": "gernest",
+      "contributions": 1891
+    },
+    {
+      "login": "Kalebu",
+      "contributions": 1883
+    },
+    {
+      "login": "lykmapipo",
+      "contributions": 658
+    },
+    {
+      "login": "isaka-james",
+      "contributions": 565
+    },
+    {
+      "login": "karimshaban01",
+      "contributions": 50
+    },
+    {
+      "login": "nyenza",
+      "contributions": 34
+    },
+    {
+      "login": "avict18",
+      "contributions": 9
+    },
+    {
+      "login": "dexflare",
+      "contributions": 0
     }
   ]
 }

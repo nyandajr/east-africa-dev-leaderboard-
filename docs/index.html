@@ -1,0 +1,224 @@
+<title>Tanzania Dev Ledger</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #F6F3EC;
+    --surface: #FFFFFF;
+    --surface-raised: #FDFBF6;
+    --border: #E4DECE;
+    --text: #21201B;
+    --text-muted: #6B6656;
+    --text-faint: #9A957F;
+    --accent: #C67F1E;
+    --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #12181F;
+      --surface: #182029;
+      --surface-raised: #1D2733;
+      --border: #2A3542;
+      --text: #EDE8DE;
+      --text-muted: #A6A18F;
+      --text-faint: #6E6A5C;
+      --accent: #E5A445;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #12181F;
+    --surface: #182029;
+    --surface-raised: #1D2733;
+    --border: #2A3542;
+    --text: #EDE8DE;
+    --text-muted: #A6A18F;
+    --text-faint: #6E6A5C;
+    --accent: #E5A445;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding-inline: 20px;
+    padding-block: 40px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-variant-numeric: tabular-nums;
+  }
+  main { max-width: 720px; margin: 0 auto; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-size: clamp(1.6rem, 4.5vw, 2.15rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 0 0 8px;
+  }
+  .subhead {
+    color: var(--text-muted);
+    font-size: 0.98rem;
+    line-height: 1.55;
+    max-width: 62ch;
+    margin: 0 0 6px;
+  }
+  .meta {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--text-faint);
+    margin-bottom: 32px;
+  }
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 2.4rem 1fr auto;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .row:last-child { border-bottom: none; }
+
+  .rank {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-faint);
+  }
+  .row:nth-child(1) .rank, .row:nth-child(2) .rank { color: var(--accent); }
+
+  .name {
+    font-weight: 600;
+    font-size: 0.98rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .count {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .count-label {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 400;
+    color: var(--text-faint);
+    text-align: right;
+  }
+
+  .callout {
+    margin-top: 28px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+  .callout h2 {
+    font-size: 0.95rem;
+    margin: 0 0 10px;
+    font-weight: 700;
+  }
+  .callout p {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.65;
+  }
+  .callout strong { font-family: var(--mono); }
+
+  .foot {
+    margin-top: 28px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .foot code {
+    font-family: var(--mono);
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 0.85em;
+  }
+
+  @media (max-width: 460px) {
+    .row { grid-template-columns: 2rem 1fr auto; padding: 12px 14px; gap: 10px; }
+    .count { font-size: 0.92rem; }
+  }
+</style>
+
+<main>
+  <div class="eyebrow">East Africa Dev Ledger — Tanzania</div>
+  <h1>Who's actually building the most</h1>
+  <p class="subhead">
+    Same top 10 committers.top tracks, pulled fresh from GitHub's own GraphQL API
+    every 5 days instead of a scraper that's gone stale for weeks at a time.
+  </p>
+  <div class="meta" id="meta">loading…</div>
+
+  <div class="list" id="list"></div>
+
+  <div class="callout">
+    <h2>Why this exists</h2>
+    <p>
+      Committers.top ranked <strong>ebrahimHakimuddin</strong> #2 on a repo whose own
+      README claims it doesn't create real commits — it does: ~137,000 of them,
+      messages literally reading "commit 5000," "commit 4999," all landing in the
+      same second. Raw counts alone can't catch that. This page pulls real numbers
+      directly from GitHub instead of relying on a third-party scraper that can go
+      stale for weeks without anyone noticing.
+    </p>
+  </div>
+
+  <p class="foot">
+    Built on <code>api.github.com/graphql</code> directly, not scraped. Updates
+    every 5 days via a self-hosted cron job.
+  </p>
+</main>
+
+<script>
+fetch('data.json')
+  .then(r => r.json())
+  .then(d => {
+    document.getElementById('meta').textContent =
+      `updated ${new Date(d.generated_at).toLocaleString()} · github graphql api`;
+
+    const list = document.getElementById('list');
+    list.innerHTML = '';
+    d.leaderboard.forEach((entry, i) => {
+      const row = document.createElement('div');
+      row.className = 'row';
+      row.innerHTML = `
+        <div class="rank">${String(i + 1).padStart(2, '0')}</div>
+        <div class="name">${entry.login}</div>
+        <div class="count">${entry.contributions.toLocaleString()}<span class="count-label">contributions</span></div>
+      `;
+      list.appendChild(row);
+    });
+  })
+  .catch(() => {
+    document.getElementById('meta').textContent = 'data.json not found yet';
+  });
+</script>

@@ -17,6 +17,8 @@ REPO_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_JSON = os.path.join(REPO_DIR, "docs", "data.json")
 HISTORY_CSV = os.path.join(REPO_DIR, "data", "history.csv")
 COMMITTERS_BADGE_JSON = os.path.join(REPO_DIR, "docs", "committers_rank_badge.json")
+CATCHUP_BADGE_JSON = os.path.join(REPO_DIR, "docs", "catchup_badge.json")
+PACE_WINDOW_DAYS = 14
 
 # The login whose committers.top rank gets published as a self-hosted
 # shields.io endpoint badge (see fetch_committers_rank below).
@@ -107,6 +109,87 @@ def fetch_committers_rank(login, country):
         return None
 
 
+def fetch_recent_daily_pace(login, token, days=PACE_WINDOW_DAYS):
+    """Average daily contribution count over the last `days` days, from
+    GitHub's own contribution calendar -- used to project a realistic
+    catch-up date rather than assuming a flat historical average.
+    """
+    query = """
+    query($login: String!) {
+      user(login: $login) {
+        contributionsCollection {
+          contributionCalendar { weeks { contributionDays { contributionCount } } }
+        }
+      }
+    }
+    """
+    resp = requests.post(
+        GRAPHQL_URL,
+        json={"query": query, "variables": {"login": login}},
+        headers={"Authorization": f"Bearer {token}"},
+        timeout=30,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    try:
+        weeks = data["data"]["user"]["contributionsCollection"]["contributionCalendar"]["weeks"]
+        all_days = [d["contributionCount"] for w in weeks for d in w["contributionDays"]]
+        recent = all_days[-days:]
+        return sum(recent) / len(recent) if recent else 0.0
+    except (KeyError, TypeError):
+        print(f"[update_leaderboard] couldn't fetch pace for {login}: {data}")
+        return None
+
+
+def write_catchup_badge(countries, token):
+    """If PROFILE_BADGE_LOGIN isn't #1 in their country, projects how many
+    days at current relative pace it'd take to close the gap, and
+    publishes it as a self-hosted badge -- same reasoning as the
+    committers.top rank badge: a real, live-computed number instead of a
+    one-off answer that goes stale the moment it's given.
+    """
+    board = countries.get(PROFILE_BADGE_COUNTRY, [])
+    if not board:
+        return
+    me = next((r for r in board if r["login"] == PROFILE_BADGE_LOGIN), None)
+    leader = board[0]
+    if me is None:
+        return
+
+    if leader["login"] == PROFILE_BADGE_LOGIN:
+        badge = {
+            "schemaVersion": 1, "label": "path to #1",
+            "message": f"already #1 {PROFILE_BADGE_COUNTRY}",
+            "color": "00bfff", "labelColor": "050b18",
+        }
+        print(f"[update_leaderboard] {PROFILE_BADGE_LOGIN} is already #1 in {PROFILE_BADGE_COUNTRY}")
+    else:
+        gap = leader["contributions"] - me["contributions"]
+        my_pace = fetch_recent_daily_pace(PROFILE_BADGE_LOGIN, token)
+        leader_pace = fetch_recent_daily_pace(leader["login"], token)
+        if my_pace is None or leader_pace is None:
+            print("[update_leaderboard] couldn't compute catch-up pace, leaving badge as-is")
+            return
+        net_pace = my_pace - leader_pace
+        if net_pace <= 0:
+            message = f"not closing ({gap:,} behind {leader['login']})"
+        else:
+            days_needed = gap / net_pace
+            message = f"~{days_needed:.0f}d behind {leader['login']}"
+        badge = {
+            "schemaVersion": 1, "label": "path to #1",
+            "message": message,
+            "color": "00bfff", "labelColor": "050b18",
+        }
+        print(
+            f"[update_leaderboard] {PROFILE_BADGE_LOGIN}: {gap:,} behind {leader['login']} "
+            f"({my_pace:.0f}/day vs {leader_pace:.0f}/day, net {net_pace:+.0f}/day) -> {message}"
+        )
+
+    with open(CATCHUP_BADGE_JSON, "w") as f:
+        json.dump(badge, f, indent=2)
+
+
 def write_committers_badge(rank, country):
     if rank is None:
         print("[update_leaderboard] committers.top rank unavailable, leaving badge as-is")
@@ -158,6 +241,7 @@ def run(token=None):
 
     rank = fetch_committers_rank(PROFILE_BADGE_LOGIN, PROFILE_BADGE_COUNTRY)
     write_committers_badge(rank, PROFILE_BADGE_COUNTRY)
+    write_catchup_badge(countries, token)
 
     return countries
 

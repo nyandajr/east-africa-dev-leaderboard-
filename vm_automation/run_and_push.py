@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 
 REPO_DIR = Path(__file__).resolve().parent.parent
 SRC_DIR = REPO_DIR / "src"
-DATA_FILES = ["data/history.csv", "docs/data.json"]
+DATA_FILES = ["data/history.csv", "docs/data.json", "docs/committers_rank_badge.json"]
 
 sys.path.insert(0, str(SRC_DIR))
 load_dotenv(REPO_DIR / ".env")  # populates GITHUB_TOKEN for update_leaderboard.py

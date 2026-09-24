@@ -16,6 +16,12 @@ import requests
 REPO_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_JSON = os.path.join(REPO_DIR, "docs", "data.json")
 HISTORY_CSV = os.path.join(REPO_DIR, "data", "history.csv")
+COMMITTERS_BADGE_JSON = os.path.join(REPO_DIR, "docs", "committers_rank_badge.json")
+
+# The login whose committers.top rank gets published as a self-hosted
+# shields.io endpoint badge (see fetch_committers_rank below).
+PROFILE_BADGE_LOGIN = "nyandajr"
+PROFILE_BADGE_COUNTRY = "Tanzania"
 
 # Top 20 candidates per country by GitHub follower count (GitHub Search
 # API, location:"<country>"), as of the 2026-09-23 launch. Raw lists,
@@ -49,10 +55,21 @@ GRAPHQL_URL = "https://api.github.com/graphql"
 
 
 def fetch_contributions(login, token):
+    # Ranks by PUBLIC contributions (total minus GitHub's own
+    # restrictedContributionsCount), not the raw total -- matches
+    # committers.top's own methodology (verified by reading its source:
+    # github.com/ashkulz/committers.top, output.go's
+    # selectPublicContributions). Private-repo activity can't be seen or
+    # verified by anyone looking at this board, so it shouldn't be able to
+    # inflate a public ranking -- confirmed this was inflating
+    # Ajmalleonard's rank by 71k+ contributions before this fix.
     query = """
     query($login: String!) {
       user(login: $login) {
-        contributionsCollection { contributionCalendar { totalContributions } }
+        contributionsCollection {
+          contributionCalendar { totalContributions }
+          restrictedContributionsCount
+        }
       }
     }
     """
@@ -65,10 +82,45 @@ def fetch_contributions(login, token):
     resp.raise_for_status()
     data = resp.json()
     try:
-        return data["data"]["user"]["contributionsCollection"]["contributionCalendar"]["totalContributions"]
+        collection = data["data"]["user"]["contributionsCollection"]
+        total = collection["contributionCalendar"]["totalContributions"]
+        restricted = collection["restrictedContributionsCount"]
+        return total - restricted
     except (KeyError, TypeError):
         print(f"[update_leaderboard] couldn't fetch {login}: {data}")
         return None
+
+
+def fetch_committers_rank(login, country):
+    """Pulls committers.top's own rank-only JSON feed and finds login's
+    1-indexed position, for the self-hosted profile badge below. Returns
+    None if the feed is unreachable or login isn't listed (don't want a
+    stale badge on a transient failure -- caller keeps the last badge in
+    that case rather than overwriting it with an error state).
+    """
+    try:
+        resp = requests.get(f"https://committers.top/rank_only/{country.lower()}.json", timeout=15)
+        resp.raise_for_status()
+        users = resp.json().get("user", [])
+        return users.index(login) + 1
+    except (requests.RequestException, ValueError):
+        return None
+
+
+def write_committers_badge(rank, country):
+    if rank is None:
+        print("[update_leaderboard] committers.top rank unavailable, leaving badge as-is")
+        return
+    badge = {
+        "schemaVersion": 1,
+        "label": "committers.top rank",
+        "message": f"#{rank} {country}",
+        "color": "00bfff",
+        "labelColor": "050b18",
+    }
+    with open(COMMITTERS_BADGE_JSON, "w") as f:
+        json.dump(badge, f, indent=2)
+    print(f"[update_leaderboard] {PROFILE_BADGE_LOGIN} is #{rank} on committers.top/{country}")
 
 
 def run(token=None):
@@ -103,6 +155,9 @@ def run(token=None):
             for r in results:
                 f.write(f"{generated_at},{country},{r['login']},{r['contributions']}\n")
     print(f"[update_leaderboard] appended to {HISTORY_CSV}")
+
+    rank = fetch_committers_rank(PROFILE_BADGE_LOGIN, PROFILE_BADGE_COUNTRY)
+    write_committers_badge(rank, PROFILE_BADGE_COUNTRY)
 
     return countries
 

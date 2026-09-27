@@ -216,9 +216,16 @@ def run(token=None):
         results = []
         for login in users:
             count = fetch_contributions(login, token)
-            if count is not None:
+            if count is not None and count > 0:
                 results.append({"login": login, "contributions": count})
                 print(f"[update_leaderboard] {country} — {login}: {count:,}")
+            elif count == 0:
+                # Follower-based discovery surfaces some accounts with zero
+                # real public activity this year -- being "top 20 by
+                # followers" doesn't make someone a top contributor, so
+                # they're dropped from the board rather than padding it
+                # with inactive names.
+                print(f"[update_leaderboard] {country} — {login}: 0 (excluded, no real activity)")
         results.sort(key=lambda r: r["contributions"], reverse=True)
         countries[country] = results
 

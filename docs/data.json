@@ -1,30 +1,30 @@
 {
-  "generated_at": "2026-09-26T03:00:48.294113+00:00",
+  "generated_at": "2026-09-27T07:41:41.758348+00:00",
   "countries": {
     "Tanzania": [
       {
         "login": "ebrahimHakimuddin",
-        "contributions": 54437
+        "contributions": 54445
       },
       {
         "login": "nyandajr",
-        "contributions": 42120
+        "contributions": 43355
       },
       {
         "login": "Ajmalleonard",
-        "contributions": 35745
+        "contributions": 35759
       },
       {
         "login": "cleven12",
-        "contributions": 11619
+        "contributions": 11624
       },
       {
         "login": "raydanielg",
-        "contributions": 10840
+        "contributions": 10879
       },
       {
         "login": "alobit21",
-        "contributions": 5791
+        "contributions": 5821
       },
       {
         "login": "tacheraSasi",
@@ -44,7 +44,7 @@
       },
       {
         "login": "tarxemo",
-        "contributions": 1199
+        "contributions": 1283
       },
       {
         "login": "gernest",
@@ -60,7 +60,7 @@
       },
       {
         "login": "isaka-james",
-        "contributions": 56
+        "contributions": 57
       },
       {
         "login": "nyenza",
@@ -73,20 +73,12 @@
       {
         "login": "Kalebu",
         "contributions": 13
-      },
-      {
-        "login": "dexflare",
-        "contributions": 0
-      },
-      {
-        "login": "avict18",
-        "contributions": 0
       }
     ],
     "Kenya": [
       {
         "login": "fbiego",
-        "contributions": 6726
+        "contributions": 6727
       },
       {
         "login": "iVGeek",
@@ -143,32 +135,12 @@
       {
         "login": "jmoseka",
         "contributions": 1
-      },
-      {
-        "login": "dirambora",
-        "contributions": 0
-      },
-      {
-        "login": "jonkirathe",
-        "contributions": 0
-      },
-      {
-        "login": "Mathenge-Alex",
-        "contributions": 0
-      },
-      {
-        "login": "danielmuthama",
-        "contributions": 0
-      },
-      {
-        "login": "jackjulla",
-        "contributions": 0
       }
     ],
     "Uganda": [
       {
         "login": "MUKE-coder",
-        "contributions": 2932
+        "contributions": 2933
       },
       {
         "login": "judeotine",
@@ -176,15 +148,15 @@
       },
       {
         "login": "kallyas",
-        "contributions": 1860
+        "contributions": 1881
       },
       {
         "login": "has2k1",
-        "contributions": 1331
+        "contributions": 1356
       },
       {
         "login": "KubanjaElijahEldred",
-        "contributions": 1322
+        "contributions": 1335
       },
       {
         "login": "HassanBahati",
@@ -241,10 +213,6 @@
       {
         "login": "Tumworobere",
         "contributions": 2
-      },
-      {
-        "login": "chardso",
-        "contributions": 0
       }
     ]
   }

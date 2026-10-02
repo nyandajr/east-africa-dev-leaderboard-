@@ -70,7 +70,12 @@ def git_commit_and_push(countries, token):
     # Authenticated URL built at push time from the .env token, rather than
     # storing credentials in git config on disk.
     push_url = f"https://{token}@github.com/nyandajr/east-africa-dev-leaderboard-.git"
-    run("git", "push", "--force", push_url, "HEAD:main")
+    # No --force: sync_with_remote() already reset --hard to origin/main,
+    # so this is always a fast-forward. GitHub's contribution graph is
+    # fed by a separate PushEvent pipeline that silently drops commits
+    # behind a force-pushed ref -- confirmed undercounting real commits
+    # portfolio-wide by up to 80%+ before this was fixed.
+    run("git", "push", push_url, "HEAD:main")
 
 
 def main():

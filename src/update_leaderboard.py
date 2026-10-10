@@ -9,11 +9,19 @@ pattern into this portfolio for one repo).
 
 import json
 import os
+import sys
 from datetime import datetime, timezone
 
 import requests
 
-REPO_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SRC_DIR = os.path.dirname(os.path.abspath(__file__))
+REPO_DIR = os.path.dirname(SRC_DIR)
+sys.path.insert(0, SRC_DIR)
+
+import classify
+import discover
+from config import BOARD_SIZE_PER_COUNTRY
+
 DATA_JSON = os.path.join(REPO_DIR, "docs", "data.json")
 HISTORY_CSV = os.path.join(REPO_DIR, "data", "history.csv")
 COMMITTERS_BADGE_JSON = os.path.join(REPO_DIR, "docs", "committers_rank_badge.json")
@@ -24,34 +32,6 @@ PACE_WINDOW_DAYS = 14
 # shields.io endpoint badge (see fetch_committers_rank below).
 PROFILE_BADGE_LOGIN = "nyandajr"
 PROFILE_BADGE_COUNTRY = "Tanzania"
-
-# Top 20 candidates per country by GitHub follower count (GitHub Search
-# API, location:"<country>"), as of the 2026-09-23 launch. Raw lists,
-# unfiltered by commit-authenticity classification -- same "count
-# everyone, no exclusions" methodology committers.top itself uses. Config,
-# not hardcoded logic -- add/remove names here as the community
-# leaderboard shifts, no code changes needed.
-TRACKED_USERS_BY_COUNTRY = {
-    "Tanzania": [
-        "Ajmalleonard", "ebrahimHakimuddin", "nyandajr", "raydanielg", "cleven12",
-        "tacheraSasi", "isonlycoolie", "alobit21", "atilioobadia-cpu", "ALTUM-02",
-        "dexflare", "nyenza", "lykmapipo", "karimshaban01", "avict18",
-        "Kalebu", "isaka-james", "tarxemo", "gernest", "TheCollinsByte",
-    ],
-    "Kenya": [
-        "JohnMwendwa", "dirambora", "david-kariuki", "omololevy", "godfreymatagaro",
-        "Maxwell-Muthui-Mwangi", "jonkirathe", "iVGeek", "Mathenge-Alex", "fbiego",
-        "Dark-Xploit", "mbitujames", "jumaallan", "betascribbles", "danielmuthama",
-        "jackjulla", "Mulandii", "peanutsx50", "jmoseka", "Obraims",
-    ],
-    "Uganda": [
-        "judeotine", "jod35", "codebender828", "jesar-enl", "KubanjaElijahEldred",
-        "kidde60", "has2k1", "MUKE-coder", "chardso", "ceasor-elvis",
-        "kallyas", "FahimWeblogicAndCyberTechnologies", "iamtutumo", "innocentmukjr",
-        "KATUMBA-ANDREW-FELIX", "PerezChris99", "HassanBahati", "rubanzasilva",
-        "Tumworobere", "Wanderajonah",
-    ],
-}
 
 GRAPHQL_URL = "https://api.github.com/graphql"
 
@@ -211,23 +191,38 @@ def run(token=None):
     if not token:
         raise SystemExit("GITHUB_TOKEN not set -- GraphQL requires an authenticated token")
 
+    candidates_by_country = discover.discover_all()
+
     countries = {}
-    for country, users in TRACKED_USERS_BY_COUNTRY.items():
+    for country, candidates in candidates_by_country.items():
         results = []
-        for login in users:
+        for candidate in candidates:
+            login = candidate["login"]
+            classified = classify.classify_user(candidate, token=token)
+            if classified["classification"]["overall"] == "FARMED":
+                # The actual differentiator vs. committers.top's raw count:
+                # a confirmed farming pattern (e.g. ebrahimHakimuddin's
+                # "repo-to-beat-top-git-commits-in-tanzania", ~137k commits
+                # with generic sequential messages landing in the same
+                # second -- see classify.py) disqualifies the account
+                # outright, regardless of total contribution count.
+                print(f"[update_leaderboard] {country} — {login}: excluded (FARMED)")
+                continue
+
             count = fetch_contributions(login, token)
             if count is not None and count > 0:
                 results.append({"login": login, "contributions": count})
-                print(f"[update_leaderboard] {country} — {login}: {count:,}")
             elif count == 0:
-                # Follower-based discovery surfaces some accounts with zero
-                # real public activity this year -- being "top 20 by
-                # followers" doesn't make someone a top contributor, so
-                # they're dropped from the board rather than padding it
-                # with inactive names.
+                # committers.top's candidate pool includes accounts with
+                # zero real public activity this year -- being tracked by
+                # them doesn't make someone a top contributor, so they're
+                # dropped from the board rather than padding it with
+                # inactive names.
                 print(f"[update_leaderboard] {country} — {login}: 0 (excluded, no real activity)")
         results.sort(key=lambda r: r["contributions"], reverse=True)
-        countries[country] = results
+        countries[country] = results[:BOARD_SIZE_PER_COUNTRY]
+        print(f"[update_leaderboard] {country}: {len(countries[country])} on the board "
+              f"(from {len(candidates)} candidates)")
 
     generated_at = datetime.now(timezone.utc).isoformat()
 

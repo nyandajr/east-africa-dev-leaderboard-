@@ -1,77 +1,48 @@
-"""Phase A: cheap discovery + shortlisting.
+"""Phase A: candidate discovery, sourced from committers.top's own public
+rank feed rather than re-deriving a candidate pool from scratch.
 
-Uses GitHub's Search API to find candidate users per country, sorted by
-followers (a signal already included in search results, so this phase
-costs only a handful of requests per country regardless of pool size --
-no per-user calls needed here). Produces a shortlist that Phase B (the
-detailed classifier in classify.py) then does deeper, more expensive
-analysis on.
+The original approach used GitHub's Search API (location:"<country>",
+sorted by followers) and capped the shortlist at 40 per country. That
+missed real, highly active developers badly: a live spot-check against
+committers.top/tanzania_public found 9 developers with 1,500-4,000+
+contributions each who all ranked beyond followers-rank 100 (one as
+deep as rank 645 -- Barakael, 11 followers), and a 10th (av-dev2) whose
+location field is "dar es salaam" with no country name in it at all,
+so no location-text search would ever find them regardless of depth.
+
+committers.top has already solved discovery at a scale (GH Archive-based
+crawling, not a per-request API) this project can't replicate every 5
+days. Its rank_only/<country>.json feed is the same data this repo
+already pulls for its own committers.top rank badge -- confirmed live
+to contain all 10 of the above (256/256 Tanzania candidates total).
+
+This phase is intentionally "trust their discovery, verify everything
+else": classify.py (Phase B) is this project's actual differentiator,
+flagging FARMED/IMPORTED_HISTORY accounts that a raw contribution count
+-- committers.top's or GitHub's own -- doesn't distinguish.
 """
-
-import json
-import time
 
 import requests
 
-from config import CANDIDATES_FILE, COUNTRIES, SHORTLIST_SIZE_PER_COUNTRY
+from config import COUNTRIES
 
-SEARCH_URL = "https://api.github.com/search/users"
-HEADERS = {"Accept": "application/vnd.github+json"}
+RANK_FEED_URL = "https://committers.top/rank_only/{country}.json"
 
 
-def _request(url, params, token=None):
-    headers = dict(HEADERS)
-    if token:
-        headers["Authorization"] = f"Bearer {token}"
-    resp = requests.get(url, params=params, headers=headers, timeout=30)
+def discover_country(country):
+    """Returns every candidate committers.top tracks for `country`."""
+    resp = requests.get(RANK_FEED_URL.format(country=country.lower()), timeout=30)
     resp.raise_for_status()
-    return resp.json()
+    logins = resp.json().get("user", [])
+    return [{"login": login, "country": country} for login in logins]
 
 
-def discover_country(country, limit=SHORTLIST_SIZE_PER_COUNTRY, token=None):
-    """Returns up to `limit` candidates for a country, sorted by followers
-    descending -- the same "top by followers first" filter committers.top
-    itself uses, since checking every single user in a 30k+ pool isn't
-    feasible within any reasonable API budget.
-    """
-    candidates = []
-    per_page = 100
-    page = 1
-    while len(candidates) < limit and page <= 10:  # GitHub search caps at 1000 results total
-        data = _request(
-            SEARCH_URL,
-            {"q": f'location:"{country}"', "sort": "followers", "order": "desc",
-             "per_page": per_page, "page": page},
-            token=token,
-        )
-        items = data.get("items", [])
-        if not items:
-            break
-        for item in items:
-            candidates.append({
-                "login": item["login"],
-                "id": item["id"],
-                "country": country,
-                "html_url": item["html_url"],
-            })
-        page += 1
-        time.sleep(1)  # be a polite citizen of the search API's stricter rate limit
-
-    return candidates[:limit]
-
-
-def discover_all(token=None):
-    all_candidates = []
+def discover_all():
+    all_candidates = {}
     for country in COUNTRIES:
-        print(f"[discover] {country}...")
-        found = discover_country(country, token=token)
-        print(f"[discover]   {len(found)} candidates")
-        all_candidates.extend(found)
-
-    CANDIDATES_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with open(CANDIDATES_FILE, "w") as f:
-        json.dump(all_candidates, f, indent=2)
-    print(f"[discover] {len(all_candidates)} total candidates -> {CANDIDATES_FILE}")
+        found = discover_country(country)
+        print(f"[discover] {country}: {len(found)} candidates")
+        all_candidates[country] = found
     return all_candidates
 
 

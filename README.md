@@ -18,34 +18,43 @@ nobody the wiser.
 
 ## How it works
 
-**Discovery** (`src/discover.py`): candidate shortlisting per country via
-GitHub's Search API, sorted by followers — the same signal committers.top
-itself leans on. Verified live counts as of 2026-09-23: Tanzania 6,402 ·
-Kenya 36,592 · Uganda 8,793 · Rwanda 6,554 · Burundi 553 GitHub users with
-a location set. The tracked list per country is unfiltered — same "count
-everyone, no exclusions" methodology committers.top itself uses.
+**Discovery** (`src/discover.py`): candidates per country come straight
+from committers.top's own public `rank_only/<country>.json` feed — not
+re-derived from GitHub's Search API. An earlier version shortlisted the
+top 40 candidates per country by GitHub follower count, which turned out
+to miss real, highly active developers badly: a live spot-check against
+committers.top/tanzania_public found 9 developers with 1,500-4,000+
+contributions each who all ranked beyond followers-rank 100 (one as deep
+as rank 645), plus a 10th whose location field doesn't contain the
+country's name at all, so no location-text search would ever surface
+them. committers.top has already solved discovery at a scale (GH
+Archive-based crawling) this project can't replicate every 5 days, so
+this project now trusts their discovery and focuses its own effort on
+the part that's actually its differentiator: classification.
 
-**Refresh** (`src/update_leaderboard.py`): pulls each tracked user's real
-`contributionsCollection.contributionCalendar.totalContributions` straight
-from GitHub's GraphQL API for all three countries and writes
-`docs/data.json`, which the dashboard renders client-side as three
-tabbed sections (Tanzania / Kenya / Uganda, top 20 each). Runs on the VM's
-own crontab every 5 days — not GitHub Actions, same reasoning as every
-other tracker in this portfolio (schedule triggers deliver a fraction of
-their configured cadence for sub-hourly jobs; less of a concern at 5 days,
-but no reason to introduce a second automation pattern for one repo).
+**Classification** (`src/classify.py`): every candidate's own (non-fork)
+repos get sampled and their commit pattern labeled as one of `FARMED`
+(generic/sequential messages like "commit 5000" landing multiple-per-
+timestamp — how `ebrahimHakimuddin`'s ~137k-commit repo was caught),
+`IMPORTED_HISTORY` (real commits pushed all at once from history that
+predates the repo itself), `AUTOMATED_PIPELINE` (regular intervals with
+real, content-aware messages — legitimate cron-driven pipelines), or
+`ORGANIC`. `FARMED` is the only disqualifying label — it drops the
+account from the board regardless of contribution count. This used to be
+an investigative tool only, verified against known cases but never
+actually applied to the published list; it's now wired into every run.
 
-**Classification** (`src/classify.py`, investigative tool, not applied to
-the tracked list): samples a candidate's own (non-fork) repos and labels
-their commit pattern as one of `FARMED` (generic/sequential messages like
-"commit 5000" landing multiple-per-timestamp — how `ebrahimHakimuddin`'s
-~137k-commit repo was caught), `IMPORTED_HISTORY` (real commits pushed all
-at once from history that predates the repo itself), `AUTOMATED_PIPELINE`
-(regular intervals with real, content-aware messages — legitimate
-cron-driven pipelines), or `ORGANIC`. Every category is grounded in a real
-case found during this portfolio's investigation of committers.top, not a
-theoretical taxonomy — but it's used for transparency/flagging, not to
-exclude anyone from the count.
+**Refresh** (`src/update_leaderboard.py`): for every non-`FARMED`
+candidate, pulls their real
+`contributionsCollection.contributionCalendar.totalContributions` (minus
+GitHub's own `restrictedContributionsCount`, so private-repo activity
+can't inflate a public ranking) from GitHub's GraphQL API, drops anyone
+at 0, ranks the rest, and keeps the top 20 per country for
+`docs/data.json`. Runs on the VM's own crontab every 5 days — not GitHub
+Actions, same reasoning as every other tracker in this portfolio
+(schedule triggers deliver a fraction of their configured cadence for
+sub-hourly jobs; less of a concern at 5 days, but no reason to introduce
+a second automation pattern for one repo).
 
 ## Data
 

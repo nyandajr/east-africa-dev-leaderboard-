@@ -21,6 +21,7 @@ project's earlier investigation of committers.top, not theoretical:
 
 import re
 import statistics
+import time
 from collections import Counter
 from datetime import datetime
 
@@ -41,6 +42,11 @@ def _get(url, params=None, token=None):
     if token:
         headers["Authorization"] = f"Bearer {token}"
     resp = requests.get(url, params=params, headers=headers, timeout=30)
+    # Polite pacing: classify_user makes up to 6 of these per candidate,
+    # and a full run is ~1,280 candidates across 5 countries -- without
+    # this, that's a burst pattern GitHub's secondary rate limit flags
+    # long before the 5,000/hr primary budget is anywhere near used.
+    time.sleep(0.15)
     if resp.status_code == 404:
         return None
     resp.raise_for_status()

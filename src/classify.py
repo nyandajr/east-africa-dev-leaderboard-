@@ -41,16 +41,40 @@ def _get(url, params=None, token=None):
     headers = dict(HEADERS)
     if token:
         headers["Authorization"] = f"Bearer {token}"
-    resp = requests.get(url, params=params, headers=headers, timeout=30)
-    # Polite pacing: classify_user makes up to 6 of these per candidate,
-    # and a full run is ~1,280 candidates across 5 countries -- without
-    # this, that's a burst pattern GitHub's secondary rate limit flags
-    # long before the 5,000/hr primary budget is anywhere near used.
-    time.sleep(0.15)
-    if resp.status_code == 404:
+    for attempt in range(3):
+        resp = requests.get(url, params=params, headers=headers, timeout=30)
+        # Polite pacing: classify_user makes up to 6 of these per candidate,
+        # and a full run is ~1,280 candidates across 5 countries -- without
+        # this, that's a burst pattern GitHub's secondary rate limit flags
+        # long before the 5,000/hr primary budget is anywhere near used.
+        time.sleep(0.15)
+        if resp.status_code < 400:
+            return resp.json()
+
+        if resp.status_code == 403 and resp.headers.get("x-ratelimit-remaining") == "0":
+            wait = max(int(resp.headers.get("x-ratelimit-reset", 0)) - time.time(), 1)
+            print(f"[classify] primary rate limit hit, sleeping {wait:.0f}s")
+            time.sleep(min(wait, 900))
+            continue
+        if resp.status_code == 403 and "rate limit" in resp.text.lower():
+            backoff = 30 * (attempt + 1)
+            print(f"[classify] secondary rate limit, backing off {backoff}s")
+            time.sleep(backoff)
+            continue
+
+        # Any other error is treated as "no signal from this repo" and
+        # skipped, rather than crashing the whole run -- at this scale
+        # (~1,280 candidates' repos) some are reliably going to be
+        # inaccessible for reasons that have nothing to do with the
+        # candidate: trademark/DMCA blocks (confirmed live case:
+        # fredy-me/amazon-cloned-assignment-web, 403 "Repository access
+        # blocked"), empty repos (409), legal holds (451), deleted repos.
+        if resp.status_code not in (403, 404, 409, 451):
+            print(f"[classify] {resp.status_code} on {url}: {resp.text[:150]}")
         return None
-    resp.raise_for_status()
-    return resp.json()
+
+    print(f"[classify] giving up on {url} after repeated rate limiting")
+    return None
 
 
 def _user_repos(login, limit=REPOS_TO_SAMPLE_PER_USER, token=None):

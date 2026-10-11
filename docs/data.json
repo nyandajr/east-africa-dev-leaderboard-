@@ -1,10 +1,14 @@
 {
-  "generated_at": "2026-10-11T04:58:43.154077+00:00",
+  "generated_at": "2026-10-11T06:19:10.630899+00:00",
   "countries": {
     "Tanzania": [
       {
+        "login": "ebrahimHakimuddin",
+        "contributions": 54593
+      },
+      {
         "login": "nyandajr",
-        "contributions": 54255
+        "contributions": 54372
       },
       {
         "login": "Ajmalleonard",
@@ -63,11 +67,11 @@
         "contributions": 2536
       },
       {
-        "login": "klaus-gudy",
-        "contributions": 1925
+        "login": "troubleman96",
+        "contributions": 1926
       },
       {
-        "login": "troubleman96",
+        "login": "klaus-gudy",
         "contributions": 1925
       },
       {
@@ -77,24 +81,20 @@
       {
         "login": "Heracraft",
         "contributions": 1830
-      },
-      {
-        "login": "fmpiza",
-        "contributions": 1623
       }
     ],
     "Kenya": [
       {
         "login": "mwakidenis",
-        "contributions": 313556
+        "contributions": 313574
       },
       {
         "login": "mauricegift",
-        "contributions": 160418
+        "contributions": 160586
       },
       {
         "login": "MathewKioko",
-        "contributions": 39766
+        "contributions": 39770
       },
       {
         "login": "amdefiguy",
@@ -102,7 +102,7 @@
       },
       {
         "login": "WOLVAREX",
-        "contributions": 19629
+        "contributions": 19641
       },
       {
         "login": "mikeyhodl",
@@ -158,7 +158,7 @@
       },
       {
         "login": "iamvikshan",
-        "contributions": 2503
+        "contributions": 2506
       },
       {
         "login": "dennismutuku2005",
@@ -212,7 +212,7 @@
       },
       {
         "login": "Chemistry2i",
-        "contributions": 2015
+        "contributions": 2016
       },
       {
         "login": "kasasa22",

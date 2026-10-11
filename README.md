@@ -32,20 +32,22 @@ Archive-based crawling) this project can't replicate every 5 days, so
 this project now trusts their discovery and focuses its own effort on
 the part that's actually its differentiator: classification.
 
-**Classification** (`src/classify.py`): every candidate's own (non-fork)
-repos get sampled and their commit pattern labeled as one of `FARMED`
-(generic/sequential messages like "commit 5000" landing multiple-per-
-timestamp — how `ebrahimHakimuddin`'s ~137k-commit repo was caught),
-`IMPORTED_HISTORY` (real commits pushed all at once from history that
-predates the repo itself), `AUTOMATED_PIPELINE` (regular intervals with
-real, content-aware messages — legitimate cron-driven pipelines), or
-`ORGANIC`. `FARMED` is the only disqualifying label — it drops the
-account from the board regardless of contribution count. This used to be
-an investigative tool only, verified against known cases but never
-actually applied to the published list; it's now wired into every run.
+**Classification** (`src/classify.py`, investigative tool, not applied to
+the published board): samples a candidate's own (non-fork) repos and
+labels their commit pattern as one of `FARMED` (generic/sequential
+messages like "commit 5000" landing multiple-per-timestamp — how
+`ebrahimHakimuddin`'s ~137k-commit repo was caught), `IMPORTED_HISTORY`
+(real commits pushed all at once from history that predates the repo
+itself), `AUTOMATED_PIPELINE` (regular intervals with real, content-aware
+messages — legitimate cron-driven pipelines), or `ORGANIC`. This was
+wired into the live ranking briefly (excluding `FARMED` accounts
+outright) but reverted by request — the board now counts everyone
+committers.top tracks, same as their own methodology, with
+`classify.py` available to run standalone for anyone who wants the
+classification without it affecting who's ranked.
 
-**Refresh** (`src/update_leaderboard.py`): for every non-`FARMED`
-candidate, pulls their real
+**Refresh** (`src/update_leaderboard.py`): for every candidate, pulls
+their real
 `contributionsCollection.contributionCalendar.totalContributions` (minus
 GitHub's own `restrictedContributionsCount`, so private-repo activity
 can't inflate a public ranking) from GitHub's GraphQL API, drops anyone

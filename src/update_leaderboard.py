@@ -18,7 +18,6 @@ SRC_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR = os.path.dirname(SRC_DIR)
 sys.path.insert(0, SRC_DIR)
 
-import classify
 import discover
 from config import BOARD_SIZE_PER_COUNTRY
 
@@ -198,17 +197,6 @@ def run(token=None):
         results = []
         for candidate in candidates:
             login = candidate["login"]
-            classified = classify.classify_user(candidate, token=token)
-            if classified["classification"]["overall"] == "FARMED":
-                # The actual differentiator vs. committers.top's raw count:
-                # a confirmed farming pattern (e.g. ebrahimHakimuddin's
-                # "repo-to-beat-top-git-commits-in-tanzania", ~137k commits
-                # with generic sequential messages landing in the same
-                # second -- see classify.py) disqualifies the account
-                # outright, regardless of total contribution count.
-                print(f"[update_leaderboard] {country} — {login}: excluded (FARMED)")
-                continue
-
             count = fetch_contributions(login, token)
             if count is not None and count > 0:
                 results.append({"login": login, "contributions": count})

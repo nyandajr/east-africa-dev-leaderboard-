@@ -68,8 +68,12 @@ def git_commit_and_push(countries, token):
 
     run("git", "commit", "-m", build_commit_message(countries))
     # Authenticated URL built at push time from the .env token, rather than
-    # storing credentials in git config on disk.
-    push_url = f"https://{token}@github.com/nyandajr/east-africa-dev-leaderboard-.git"
+    # storing credentials in git config on disk. x-access-token, not a bare
+    # token-as-username -- confirmed 2026-10-17 that GitHub's redirect from
+    # the no-trailing-slash push URL to the trailing-slash one drops a bare
+    # embedded token, breaking every repo on this VM using that form the
+    # same day ("could not read Username for 'https://github.com'").
+    push_url = f"https://x-access-token:{token}@github.com/nyandajr/east-africa-dev-leaderboard-.git"
     # No --force: sync_with_remote() already reset --hard to origin/main,
     # so this is always a fast-forward. GitHub's contribution graph is
     # fed by a separate PushEvent pipeline that silently drops commits

@@ -1,124 +1,120 @@
 {
-  "generated_at": "2026-10-26T03:14:55.193585+00:00",
+  "generated_at": "2026-10-31T03:14:22.589153+00:00",
   "countries": {
     "Tanzania": [
       {
         "login": "nyandajr",
-        "contributions": 65345
+        "contributions": 69018
       },
       {
         "login": "ebrahimHakimuddin",
-        "contributions": 54679
+        "contributions": 54693
       },
       {
         "login": "Ajmalleonard",
-        "contributions": 32488
+        "contributions": 32610
       },
       {
         "login": "cleven12",
-        "contributions": 11662
+        "contributions": 11686
       },
       {
         "login": "raydanielg",
-        "contributions": 11372
+        "contributions": 11374
       },
       {
         "login": "alobit21",
-        "contributions": 6426
+        "contributions": 6546
       },
       {
         "login": "festomanolo",
-        "contributions": 4872
-      },
-      {
-        "login": "atilioobadia-cpu",
-        "contributions": 4741
+        "contributions": 6181
       },
       {
         "login": "av-dev2",
-        "contributions": 4735
+        "contributions": 5039
+      },
+      {
+        "login": "atilioobadia-cpu",
+        "contributions": 4973
       },
       {
         "login": "isonlycoolie",
-        "contributions": 4292
+        "contributions": 4657
       },
       {
         "login": "Sirtheprogrammer",
-        "contributions": 4240
+        "contributions": 4282
       },
       {
         "login": "tacheraSasi",
-        "contributions": 4156
+        "contributions": 4210
       },
       {
         "login": "Barakael",
-        "contributions": 3366
+        "contributions": 3536
       },
       {
         "login": "APKnation",
         "contributions": 3061
       },
       {
+        "login": "klaus-gudy",
+        "contributions": 2922
+      },
+      {
         "login": "ALTUM-02",
         "contributions": 2851
       },
       {
-        "login": "klaus-gudy",
-        "contributions": 2597
-      },
-      {
         "login": "zuck30",
-        "contributions": 2331
+        "contributions": 2383
       },
       {
         "login": "Heracraft",
-        "contributions": 2312
+        "contributions": 2361
       },
       {
         "login": "novaxmd",
-        "contributions": 2223
+        "contributions": 2229
       },
       {
-        "login": "PHENOMVALENCE",
-        "contributions": 1585
+        "login": "Mickeydeveloper",
+        "contributions": 1483
       }
     ],
     "Kenya": [
       {
         "login": "mwakidenis",
-        "contributions": 321911
+        "contributions": 322134
       },
       {
         "login": "mauricegift",
-        "contributions": 162307
+        "contributions": 163585
       },
       {
         "login": "MathewKioko",
-        "contributions": 40446
+        "contributions": 34960
       },
       {
         "login": "amdefiguy",
-        "contributions": 32401
+        "contributions": 32472
       },
       {
         "login": "mikeyhodl",
-        "contributions": 16694
+        "contributions": 16780
       },
       {
         "login": "xhclintohn",
         "contributions": 9093
       },
       {
-        "login": "nedmoeca",
-        "contributions": 7912
-      },
-      {
         "login": "cmwrxh",
-        "contributions": 6815
+        "contributions": 6929
       },
       {
         "login": "fbiego",
-        "contributions": 5899
+        "contributions": 5907
       },
       {
         "login": "wajahat-ali-mir-dev",
@@ -126,31 +122,31 @@
       },
       {
         "login": "Roy-Wanyoike",
-        "contributions": 4961
+        "contributions": 5049
       },
       {
         "login": "eodenyire",
-        "contributions": 4281
+        "contributions": 4292
+      },
+      {
+        "login": "Victor-Kipruto-Rop",
+        "contributions": 3891
+      },
+      {
+        "login": "erick-otenyo",
+        "contributions": 3776
       },
       {
         "login": "banta",
         "contributions": 3759
       },
       {
-        "login": "erick-otenyo",
-        "contributions": 3581
-      },
-      {
-        "login": "Victor-Kipruto-Rop",
-        "contributions": 3467
-      },
-      {
         "login": "Alidantech",
-        "contributions": 2964
+        "contributions": 2969
       },
       {
         "login": "denniskigen",
-        "contributions": 2833
+        "contributions": 2878
       },
       {
         "login": "rauell1",
@@ -158,107 +154,115 @@
       },
       {
         "login": "iamvikshan",
-        "contributions": 2568
+        "contributions": 2606
       },
       {
         "login": "dennismutuku2005",
-        "contributions": 2495
+        "contributions": 2499
+      },
+      {
+        "login": "Raccoon254",
+        "contributions": 2182
       }
     ],
     "Uganda": [
       {
         "login": "rmkasendwa",
-        "contributions": 11937
+        "contributions": 11944
       },
       {
         "login": "GaspardKirira",
-        "contributions": 7724
+        "contributions": 7733
       },
       {
         "login": "BAGOMBEKA-JOB-DEV",
-        "contributions": 5793
+        "contributions": 5821
       },
       {
         "login": "Baalmart",
-        "contributions": 4805
+        "contributions": 4832
       },
       {
         "login": "agabaandre",
-        "contributions": 3650
+        "contributions": 3674
       },
       {
         "login": "MUKE-coder",
-        "contributions": 3342
+        "contributions": 3569
       },
       {
         "login": "PerezChris99",
-        "contributions": 3060
+        "contributions": 3305
+      },
+      {
+        "login": "OchiengPaul442",
+        "contributions": 2821
       },
       {
         "login": "NAMATOVU-CHRISTINE",
         "contributions": 2778
       },
       {
-        "login": "OchiengPaul442",
-        "contributions": 2768
-      },
-      {
         "login": "Marcelofury",
-        "contributions": 2674
+        "contributions": 2763
       },
       {
         "login": "judeotine",
         "contributions": 2488
       },
       {
-        "login": "allannuwamanya",
-        "contributions": 2056
-      },
-      {
         "login": "danielmarv",
-        "contributions": 2012
+        "contributions": 2069
       },
       {
-        "login": "Chemistry2i",
-        "contributions": 1915
+        "login": "allannuwamanya",
+        "contributions": 2067
       },
       {
         "login": "Joshkovu",
-        "contributions": 1908
+        "contributions": 1926
+      },
+      {
+        "login": "Chemistry2i",
+        "contributions": 1917
+      },
+      {
+        "login": "mherman22",
+        "contributions": 1906
       },
       {
         "login": "Vaniahchristian",
         "contributions": 1892
       },
       {
-        "login": "jeslor",
-        "contributions": 1782
-      },
-      {
-        "login": "Kasuletrevor",
-        "contributions": 1741
+        "login": "has2k1",
+        "contributions": 1829
       },
       {
         "login": "mozzy11",
-        "contributions": 1729
+        "contributions": 1826
       },
       {
-        "login": "has2k1",
-        "contributions": 1685
+        "login": "jeslor",
+        "contributions": 1782
       }
     ],
     "Rwanda": [
       {
         "login": "coolbeatz71",
-        "contributions": 32138
+        "contributions": 32211
       },
       {
         "login": "AlineHub-tech",
-        "contributions": 24552
+        "contributions": 24652
+      },
+      {
+        "login": "uparfait",
+        "contributions": 22922
       },
       {
         "login": "kajugadaniels",
-        "contributions": 19873
+        "contributions": 20193
       },
       {
         "login": "Chaste-Djaziri",
@@ -266,15 +270,15 @@
       },
       {
         "login": "Kevin-The-Cyber-Coder",
-        "contributions": 6871
+        "contributions": 7128
       },
       {
         "login": "Derrick-MUGISHA",
-        "contributions": 6587
+        "contributions": 6654
       },
       {
         "login": "Manzi-Elvis",
-        "contributions": 6212
+        "contributions": 6303
       },
       {
         "login": "Yackx-tx",
@@ -282,39 +286,39 @@
       },
       {
         "login": "niyomugaboetiene",
-        "contributions": 4773
+        "contributions": 4859
+      },
+      {
+        "login": "CREDO23",
+        "contributions": 3749
       },
       {
         "login": "abeltony-prog",
         "contributions": 3723
       },
       {
-        "login": "CREDO23",
-        "contributions": 3723
-      },
-      {
         "login": "kawacukennedy",
-        "contributions": 3628
+        "contributions": 3625
       },
       {
         "login": "leandre000",
-        "contributions": 3466
+        "contributions": 3468
       },
       {
         "login": "Ndevu12",
-        "contributions": 3227
+        "contributions": 3193
       },
       {
         "login": "Icyubahiro-Jay-P",
-        "contributions": 3124
+        "contributions": 3126
       },
       {
         "login": "Goal651",
-        "contributions": 2545
+        "contributions": 2548
       },
       {
         "login": "nshizirunguwilson",
-        "contributions": 2423
+        "contributions": 2429
       },
       {
         "login": "Moise-codes",
@@ -323,20 +327,16 @@
       {
         "login": "ishimweghislain",
         "contributions": 2191
-      },
-      {
-        "login": "chrisszlycoen",
-        "contributions": 2133
       }
     ],
     "Burundi": [
       {
         "login": "Advaxe",
-        "contributions": 1719
+        "contributions": 2020
       },
       {
         "login": "yvartpro",
-        "contributions": 1662
+        "contributions": 1663
       },
       {
         "login": "blasius",
@@ -348,10 +348,18 @@
       },
       {
         "login": "Dylan-io",
-        "contributions": 495
+        "contributions": 626
+      },
+      {
+        "login": "Mutimanwa",
+        "contributions": 548
       },
       {
         "login": "srugano",
+        "contributions": 476
+      },
+      {
+        "login": "butofleury",
         "contributions": 473
       },
       {
@@ -359,51 +367,43 @@
         "contributions": 459
       },
       {
-        "login": "Mutimanwa",
-        "contributions": 445
-      },
-      {
         "login": "tom-cruiser",
-        "contributions": 433
+        "contributions": 450
       },
       {
         "login": "JubuNiyokoDev",
-        "contributions": 431
+        "contributions": 436
       },
       {
         "login": "inteliconnectafrica",
         "contributions": 398
       },
       {
-        "login": "butofleury",
-        "contributions": 393
-      },
-      {
         "login": "klauskira07",
         "contributions": 312
+      },
+      {
+        "login": "VincentDobingar",
+        "contributions": 279
       },
       {
         "login": "ericsson048",
         "contributions": 279
       },
       {
-        "login": "VincentDobingar",
-        "contributions": 268
-      },
-      {
         "login": "Janeirohurley",
-        "contributions": 261
+        "contributions": 260
       },
       {
         "login": "NiBienvenu",
         "contributions": 233
       },
       {
-        "login": "miguelandy875",
+        "login": "Luckson-dev",
         "contributions": 232
       },
       {
-        "login": "Luckson-dev",
+        "login": "miguelandy875",
         "contributions": 232
       },
       {
